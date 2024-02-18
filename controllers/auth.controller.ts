@@ -6,25 +6,27 @@ import UserService from "../services/user.service";
 class AuthController {
   async registerUser(req: Request, res: Response) {
     const schema = z.object({
-      email: z.string().email(),
+      email: z.string().email().endsWith("@cuchd.in"),
       password: z.string().min(6),
+      name: z.string().min(3),
+      uid: z.string(),
     });
 
-    const { email, password } = schema.parse(req.body);
+    const { email, password, name, uid } = schema.parse(req.body);
 
-    try {
-      const user = await UserService.createUser(email, password);
+    const result = await UserService.createUser(email, password, name, uid);
 
-      return res.status(201).send({
-        success: true,
-        user: user,
-      });
-    } catch (error: any) {
+    if (result instanceof Error) {
       return res.status(400).send({
         success: false,
-        error: error?.message || "Error creating user",
+        error: result.message,
       });
     }
+
+    return res.status(201).send({
+      success: true,
+      user: result,
+    });
   }
 
   async loginUser(req: Request, res: Response) {
@@ -35,27 +37,20 @@ class AuthController {
 
     const { email, password } = schema.parse(req.body);
 
-    try {
-      const result = (await UserService.getUserByEmailAndPassword(
-        email,
-        password
-      )) as any;
+    const result = await UserService.getUserByEmailAndPassword(email, password);
 
-      console.log(result);
-
-      if (result?.token) {
-        return res.status(200).send({
-          success: true,
-          token: result.token,
-          user: result.user,
-        });
-      }
-    } catch (error: any) {
-      return res.status(401).send({
+    if (result instanceof Error) {
+      return res.status(400).send({
         success: false,
-        error: error?.message || "Invalid email or password",
+        error: result.message,
       });
     }
+
+    return res.status(200).send({
+      success: true,
+      token: result.token,
+      user: result.user,
+    });
   }
 
   async sendVerificationEmail(req: Request, res: Response) {

@@ -5,7 +5,7 @@ class UserService {
     this.url = `https://whizout.pockethost.io/api/collections/users`;
   }
 
-  async createUser(email: string, password: string) {
+  async createUser(email: string, password: string, name: string, uid: string) {
     const result = await fetch(`${this.url}/records`, {
       method: "POST",
       headers: {
@@ -16,6 +16,8 @@ class UserService {
         password: password,
         passwordConfirm: password,
         emailVisibility: true,
+        name: name,
+        uid: uid,
       }),
     }).then((res) => res.json());
 
