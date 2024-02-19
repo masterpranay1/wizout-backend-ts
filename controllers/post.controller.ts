@@ -28,6 +28,7 @@ class PostController {
     if (result instanceof Error) {
       res.status(404).json({ error: result.message });
     } else {
+      console.log(result);
       res.status(200).json(result.map((post: any) => post.id));
     }
   }

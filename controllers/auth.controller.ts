@@ -13,9 +13,9 @@ class AuthController {
     });
 
     const { email, password, name, uid } = schema.parse(req.body);
-
+    console.log(email, password, name, uid);
     const result = await UserService.createUser(email, password, name, uid);
-
+    console.log(result);
     if (result instanceof Error) {
       return res.status(400).send({
         success: false,
@@ -60,31 +60,27 @@ class AuthController {
 
     const { id } = schema.parse(req.params);
 
-    let user: any = null;
+    const user = await UserService.getUserById(id);
 
-    try {
-      user = await UserService.getUserById(id);
-    } catch (error: any) {
-      return res.status(404).send({
-        success: false,
-        error: error?.message || "User not found",
-      });
-    }
-
-    try {
-      const email = user?.email;
-      console.log(user);
-      const result = await UserService.sendVerificationEmail(email);
-
-      if (result != null) {
-        throw result;
-      }
-    } catch (error: any) {
+    if (user instanceof Error) {
       return res.status(400).send({
         success: false,
-        error: error?.message || "Error sending email",
+        error: user.message,
       });
     }
+
+    const result = await UserService.sendVerificationEmail(user.email);
+
+    if (result instanceof Error) {
+      return res.status(400).send({
+        success: false,
+        error: result.message,
+      });
+    }
+
+    return res.status(200).send({
+      success: true,
+    });
   }
 }
 

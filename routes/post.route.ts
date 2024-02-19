@@ -21,3 +21,5 @@ router.get("/get-post-by-user-id/:userId", PostController.getPostsByUserId);
 
 // like a post
 router.post("/like-a-post/:postId", PostController.likePost);
+
+export default router;
