@@ -21,6 +21,8 @@ class UserService {
       }),
     }).then((res) => res.json());
 
+    console.log(result);
+
     if (result?.id) {
       return result;
     } else {
@@ -83,20 +85,19 @@ class UserService {
 
   async sendVerificationEmail(email: string) {
     console.log(email);
-    const result = await fetch(`${this.url}/request-verification`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: email,
-      }),
-    });
-
-    if (result == null) {
-      return result;
-    } else {
-      return new Error("Error sending verification email");
+    try {
+      const result = await fetch(`${this.url}/request-verification`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email,
+        }),
+      });
+      return null;
+    } catch (error: any) {
+      return new Error(error.message);
     }
   }
 }
