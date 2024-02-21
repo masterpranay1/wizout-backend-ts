@@ -26,9 +26,9 @@ class PostService {
   }
 
   async getPostsId() {
-    const result = await fetch(`${this.url}/records?fields=id`).then((res) =>
-      res.json()
-    );
+    const result = await fetch(
+      `${this.url}/records?fields=id&sort=-created`
+    ).then((res) => res.json());
 
     if (result?.items) {
       return result.items;
@@ -38,7 +38,7 @@ class PostService {
   }
 
   async getPostById(id: string) {
-    const result = await fetch(`${this.url}/records/${id}`).then((res) =>
+    const result = await fetch(`${this.url}/records/${id}?expand=userId`).then((res) =>
       res.json()
     );
 
@@ -51,7 +51,7 @@ class PostService {
 
   async getPostsByUserId(userId: string) {
     const result = await fetch(
-      `${this.url}/records?filter=(userId='${userId}')&&fields=id`
+      `${this.url}/records?filter=(userId='${userId}')&fields=id`
     ).then((res) => res.json());
 
     if (result?.items) {
